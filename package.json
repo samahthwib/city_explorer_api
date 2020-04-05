@@ -1,0 +1,26 @@
+{
+  "name": "city_explorer_api",
+  "version": "1.0.0",
+  "description": "I built a stand-alone back end which will interact with a static front end. I will request data from a total of six third-party APIs, modify the data as needed, and send the data to the client to be displayed in the browser.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samahthwib/city_explorer_api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/samahthwib/city_explorer_api/issues"
+  },
+  "homepage": "https://github.com/samahthwib/city_explorer_api#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
+  }
+}
