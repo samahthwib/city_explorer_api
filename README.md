@@ -1,13 +1,32 @@
 # city_explorer_api
 
- I built a stand-alone back end which will interact with a static front end. I will request data from a total of six third-party APIs, modify the data as needed, and send the data to the client to be displayed in the browser. 
+ I built a stand-alone back end which will interact with a static front end. I will request data from the APIs, modify the data as needed, and send the data to the client to be displayed in the browser. 
+ 
+**Author**: Samah Thweib
 
-Number and name of feature: ________________________________
+## Overview
+This app firstly converts a location entered by the user into a latitude and longitude , then use those values to request weather information for that location.
 
-Estimate of time needed to complete: _____
 
-Start time: _____
+## Getting Started
+<!-- What are the steps that a user must take in order to build this app on their own machine and get it running? -->
 
-Finish time: _____
+## Architecture
+HTML, CSS, jQuery, JavaScript for the front end.
+JavaScript, Express, Dotenv, Cors for the backend.
 
-Actual time needed to complete: _____
+
+## Change Log
+
+
+Number and name of feature: 1
+
+Estimate of time needed to complete: 3 hours
+
+Start time: 1 pm 
+
+Finish time: 6:30 pm
+
+Actual time needed to complete: 5 hours
+
+
