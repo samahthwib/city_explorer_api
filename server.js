@@ -67,17 +67,17 @@ function Locations(city, data) {
 }
 
 
-//------------------------------WEATHER---------------------------------//
+//-------------------------WEATHER----------------------------------//
 
 
-server.get('/weather', theWeather);
+server.get('/weather', weatherHandler);
 
-function theWeather(req, res) {
+function weatherHandler(req, res) {
  
   const city = req.query.city;//I'm requesting the data from the URL so we get this one from the link itself 
-                             //like this http://localhost:3000/weather?city=amman and i have to pay attention
-                            //that the protocol said to send a search-query
-  //console.log('the city is ------------------->' , city);
+                                     //like this http://localhost:3000/weather?city=amman and i have to pay attention
+                                    //that the protocol said to send a search-query
+  console.log('the city is ------------------->' , city);
   getTheWeather(city)
     .then (weatherData => res.send(weatherData));
 }
@@ -87,13 +87,14 @@ const allWeather = [];
 function getTheWeather(city) {
 
   let key = process.env.WEATHER_API_KEY; //I stored my key in the variable
-  const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${key}`; 
+
+  const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${key}`;
 
   console.log('The url is -------------> ',url);
 
   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
   .then(weatherData =>{ //all the data that i got it will store in data
-    weatherData.body.data.map(val => {
+    weatherData.body.data.forEach(val => {
       var weatherData = new Weather(val);
       allWeather.push(weatherData);
     });
@@ -108,7 +109,7 @@ function Weather(data) {
    this.time = data.valid_date;
 }
 
-//------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------
 
 
 //http://localhost:3000/anything
