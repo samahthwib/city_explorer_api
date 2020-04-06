@@ -68,48 +68,119 @@ function Locations(city, data) {
 
 
 //-------------------------WEATHER----------------------------------//
+// server.get('/weather', weatherHanddler);
 
-
-server.get('/weather', weatherHandler);
-
-function weatherHandler(req, res) {
+// function weatherHanddler(req,res) {
+//   const city = req.query.city;
+//   getWeather(city)
+//      .then (weatherData => res.status(200).json(weatherData) );
+//  }
  
-  const city = req.query.city;//I'm requesting the data from the URL so we get this one from the link itself 
-                                     //like this http://localhost:3000/weather?city=amman and i have to pay attention
-                                    //that the protocol said to send a search-query
-  console.log('the city is ------------------->' , city);
-  getTheWeather(city)
-    .then (weatherData => res.send(weatherData));
-}
+//  function getWeather (city) {
+//    let key=process.env.WEATHER_API_KEY;
+//    const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${key}`;
+   
+//    return superagent.get(url)
+//    .then( data => {
+//      let weather = data.body;
+//      return weather.data.map( (day) => {
+//        return new Weather(day);
+//       });
+//     });
+//   };
+//   function Weather( day ) {
+    
+//     this.forecast = day.summary;
+//     this.time = new Date(day.time * 1000).toDateString();
+    
+//   }
+// server.get('/weather', weatherHandler);
 
-const allWeather = [];
+// function weatherHandler(req, res) {
+ 
+//   const city = req.query.city;//I'm requesting the data from the URL so we get this one from the link itself 
+//                                      //like this http://localhost:3000/weather?city=amman and i have to pay attention
+//                                     //that the protocol said to send a search-query
+//   console.log('the city is ------------------->' , city);
+//   getTheWeather(city)
+//     .then (weatherData => res.send(weatherData));
+// }
 
-function getTheWeather(city) {
+// // const allWeather = [];
 
-  let key = process.env.WEATHER_API_KEY; //I stored my key in the variable
+// function getTheWeather(city) {
 
-  const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${key}`;
+//   let key = process.env.WEATHER_API_KEY; //I stored my key in the variable
+//   const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${key}`;
+//   console.log('The url is -------------> ',url);
+//   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
+//   .then(weatherData =>{ //all the data that i got it will store in data
+//   let a=weatherData.body;
+//     return a.data.weatherData.map(val => {
+//       // var weatherData = new Weather(val);
+//       // allWeather.push(weatherData);
+//       return new Weather(val);
+//     });
+//     // return allWeather;
 
-  console.log('The url is -------------> ',url);
+//   });
 
-  return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
-  .then(weatherData =>{ //all the data that i got it will store in data
-    weatherData.body.data.forEach(val => {
-      var weatherData = new Weather(val);
-      allWeather.push(weatherData);
-    });
-    return allWeather;
+// }
 
-  });
+// function Weather(data) {
+//    this.forecast = data.weather.description;
+//    this.time = data.valid_date;
+// }
+//----------------------------------TRAIL------------------------------------------//
 
-}
+// //set trails route
+// server.get('/trails', trailsHandler);
 
-function Weather(data) {
-   this.forecast = data.weather.description;
-   this.time = data.valid_date;
-}
+// function trailsHandler(req, res) {
+//   const city = req.query.city;//I'm requesting the data from the URL so we get this one from the link itself 
+//                              //like this http://localhost:3000/weather?city=amman and i have to pay attention
+//                             //that the protocol said to send a search-query
+//   // console.log('the city is ------------------->' , city);
+//   getTheTrails(city)
+//     .then (trailsData => res.send(trailsData));
+// }
 
-//------------------------------------------------------------------------------
+// const allTrails = [];
+
+// function getTheTrails(city) {
+
+//   let key = process.env.TRAIL_API_KEY; //I stored my key in the variable
+
+//   const url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=10&key=${key}`;
+
+//   //console.log('The url is -------------> ',url);
+
+//   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
+//   .then(trailsData =>{ //all the data that i got it will store in data
+//     trailsData.body.trails.forEach(val => {
+//       var trailsData = new Trails(val);
+//       allTrails.push(trailsData);
+//     });
+//     return allTrails;
+
+//   });
+
+// }
+
+// function Trails(trails) {
+//   this.name = trails.name;
+//   this.location = trails.location;
+//   this.length = trails.length;
+//   this.stars = trails.stars;
+//   this.star_votes= trails.starVotes;
+//   this.summary= trails.summary;
+//   this.trail_url=trails.url;
+//   this.conditions=trails.conditionStatus;
+//   this.condition_date=new Date(trails.conditionDate).toString().slice(0,15);
+//   // this.condition_time=trails.conditionDate;
+// }
+
+//---------------------------------------------------------------------------------//
 
 
 //http://localhost:3000/anything
