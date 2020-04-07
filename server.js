@@ -83,7 +83,7 @@ function weatherHandler(req, res) {
     .then (weatherData => res.send(weatherData));
 }
 
-// const allWeather = [];
+const allWeather = [];
 
 function getTheWeather(city) {
 
@@ -92,13 +92,14 @@ function getTheWeather(city) {
   console.log('The url is -------------> ',url);
   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
   .then(weatherData =>{ //all the data that i got it will store in data
-    let a=weatherData.body;
-        return a.data.map(val => {
-          // var weatherData = new Weather(val);
-          // allWeather.push(weatherData);
-          return new Weather(val);
+    // let a=weatherData.body;
+    //     return a.data.map(val => {
+      weatherData.body.data.forEach(val=>{
+          var weatherData = new Weather(val);
+          allWeather.push(weatherData);
+          // return new Weather(val);
         });
-        // return allWeather;
+        return allWeather;
     
       });
     
