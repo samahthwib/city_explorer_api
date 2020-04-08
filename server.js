@@ -1,3 +1,4 @@
+
 'use strict';
 
 
@@ -71,7 +72,7 @@ function getTheLocations(city) {
 
       let SQL = 'INSERT INTO locations (search_query,formatted_query,latitude,longitude) VALUES ($1,$2,$3,$4);';
       let safeValues = [city, query, lat, lon];
-       client.query(SQL, safeValues)
+      client.query(SQL, safeValues)
         .then(results => {
           results.rows[0];
         });
@@ -90,98 +91,177 @@ function Locations(city, data) {
 
 
 
-//-------------------------WEATHER----------------------------------//
+// //-------------------------WEATHER----------------------------------//
 
-// app.get('/weather', weatherHandler);
+app.get('/weather', weatherHandler);
 
-// function weatherHandler(req, res) {
+function weatherHandler(req, res) {
 
-//   const city = req.query.search_query;//I'm requesting the data from the URL so we get this one from the link itself
-//   //like this http://localhost:3000/weather?city=amman and i have to pay attention
-//   //that the protocol said to send a search-query
-//   console.log('the city is ------------------->', city);
-//   getTheWeather(city)
-//     .then(weatherData => res.send(weatherData));
-// }
+  const city = req.query.search_query;//I'm requesting the data from the URL so we get this one from the link itself
+  //like this http://localhost:3000/weather?city=amman and i have to pay attention
+  //that the protocol said to send a search-query
+  console.log('the city is ------------------->', city);
+  getTheWeather(city)
+    .then(weatherData => res.send(weatherData));
+}
 
-// // const allWeather = [];
+// const allWeather = [];
 
-// function getTheWeather(city) {
+function getTheWeather(city) {
 
-//   let key = process.env.WEATHER_API_KEY; //I stored my key in the variable
-//   const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${key}`;
-//   console.log('The url is -------------> ', url);
-//   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
-//     .then(weatherData => { //all the data that i got it will store in data
-//       let a = weatherData.body;
-//       return a.data.map(val => {
-//         // var weatherData = new Weather(val);
-//         // allWeather.push(weatherData);
-//         return new Weather(val);
-//       });
-//       // return allWeather;
+  let key = process.env.WEATHER_API_KEY; //I stored my key in the variable
+  const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${key}`;
+  console.log('The url is -------------> ', url);
+  return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
+    .then(weatherData => { //all the data that i got it will store in data
+      let a = weatherData.body;
+      return a.data.map(val => {
+        // var weatherData = new Weather(val);
+        // allWeather.push(weatherData);
+        return new Weather(val);
+      });
+      // return allWeather;
 
-//     });
+    });
 
-// }
-// function Weather(data) {
-//   this.forecast = data.weather.description;
-//   this.time = data.valid_date;
-// }
+}
+function Weather(data) {
+  this.forecast = data.weather.description;
+  this.time = data.valid_date;
+}
 
-//----------------------------------TRAIL------------------------------------------//
+// //----------------------------------TRAIL------------------------------------------//
 
 // //set trails route
-// app.get('/trails', trailsHandler);
+app.get('/trails', trailsHandler);
 
-// function trailsHandler(req, res) {
-//   //I'm requesting the data from the URL s
-//   const lat = req.query.lat;
-//   const lon = req.query.lon;
-//   console.log('the lat is ------------------->', lat);
-//   getTheTrails(lat, lon)
-//     .then(trailsData => res.send(trailsData));
-// }
+function trailsHandler(req, res) {
+  //I'm requesting the data from the URL s
+  const lat = req.query.lat;
+  const lon = req.query.lon;
+  console.log('the lat is ------------------->', lat);
+  getTheTrails(lat, lon)
+    .then(trailsData => res.send(trailsData));
+}
 
-// const allTrails = [];
+const allTrails = [];
 
-// function getTheTrails(lat, lon) {
+function getTheTrails(lat, lon) {
 
-//   let key = process.env.TRAIL_API_KEY; //I stored my key in the variable
+  let key = process.env.TRAIL_API_KEY; //I stored my key in the variable
 
-//   const url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=10&key=${key}`;
+  const url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=10&key=${key}`;
 
-//   //console.log('The url is -------------> ',url);
+  //console.log('The url is -------------> ',url);
 
-//   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
-//     .then(trailsData => { //all the data that i got it will store in data
-//       trailsData.body.trails.forEach(val => {
-//         var trailsData = new Trails(val);
-//         allTrails.push(trailsData);
-//       });
-//       return allTrails;
+  return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
+    .then(trailsData => { //all the data that i got it will store in data
+      trailsData.body.trails.forEach(val => {
+        var trailsData = new Trails(val);
+        allTrails.push(trailsData);
+      });
+      return allTrails;
 
-//     });
+    });
 
-// }
+}
 
-// function Trails(trails) {
-//   this.name = trails.name;
-//   this.location = trails.location;
-//   this.length = trails.length;
-//   this.stars = trails.stars;
-//   this.star_votes = trails.starVotes;
-//   this.summary = trails.summary;
-//   this.trail_url = trails.url;
-//   this.conditions = trails.conditionStatus;
-//   this.condition_date = new Date(trails.conditionDate).toString().slice(0, 15);
-//   // this.condition_time=trails.conditionDate;
-// }
+function Trails(trails) {
+  this.name = trails.name;
+  this.location = trails.location;
+  this.length = trails.length;
+  this.stars = trails.stars;
+  this.star_votes = trails.starVotes;
+  this.summary = trails.summary;
+  this.trail_url = trails.url;
+  this.conditions = trails.conditionStatus;
+  this.condition_date = new Date(trails.conditionDate).toString().slice(0, 15);
+  // this.condition_time=trails.conditionDate;
+}
 
 //---------------------------------------------------------------------------------//
 
 
+// //set movies route
+app.get('/movies', movieHandler);
+
+function movieHandler(req, res) {
+  //I'm requesting the data from the URL s
+  const city = req.query.city;
+  // const lat = req.query.lat;
+  // const lon = req.query.lon;
+
+  getTheMovies(city)
+    .then(moviesData => res.send(moviesData));
+}
+
+let allMovies=[];
+
+function getTheMovies(city) {
+
+  let key = process.env.MOVIE_API_KEY; //I stored my key in the variable
+  const url = `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${city}`;
+  console.log('The url is -------------> ', url);
+  return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
+    .then(moviesData => { //all the data that i got it will store in data
+      moviesData.body.results.forEach(val => {
+        var moviesData = new Movie(val);
+        allMovies.push(moviesData);
+      });
+      return allMovies;
+
+    });
+
+  function Movie (data) {
+    this.title = data.title,
+    this.overview = data.overview,
+    this.vote_average = data.vote_average,
+    this.total_votes = data.vote_count,
+    this.image_url = `https://image.tmdb.org/t/p/w200_and_h300_bestv2/${data.poster_path}`,
+    this.popularity = data.popularity,
+    this.release_date = data.release_date;
+  }
+}
+//----------------------------------YELP----------------------------------------//
+
+
+app.get('/yelp', restHandler);
+
+function restHandler(req, res) {
+  const city = req.query.city;
+
+  getTheRestourant(city)
+    .then(restData => res.send(restData));
+}
+
+let allRestaurant=[];
+
+function getTheRestourant(city) {
+
+  let key = process.env.MOVIE_API_KEY; //I stored my key in the variable
+  const url = ``;
+  console.log('The url is -------------> ', url);
+  return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
+    .then(restData => { //all the data that i got it will store in data
+      restData.body.results.forEach(val => {
+        var restData = new Restaurant(val);
+        allRestaurant.push(restData);
+      });
+      return allRestaurant;
+
+    });
+  }
+
+function Restaurant (data) {
+  this.name = data.name;
+  this.image_url = data.image_url;
+  this.price = data.price;
+  this.rating = data.rating;
+  this.url = data.url;
+}
+//------------------------------------------------------------------------------//
 //http://localhost:3000/anything
+
 app.use('*', (req, res) => {
   res.status(404).send('Not Found');
 });
