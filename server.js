@@ -32,40 +32,51 @@ app.get('/', (req, res) => {
   res.status(200).send('DONE');
 });
 
-//---------------------------LOCATIONS----------------------------------//
+//---------------------------------LOCATIONS----------------------------------//
 
 
 //http://localhost:3000/location?city=amman
-app.get('/location', getTheLocations); //This is the route definition
+app.get('/location', locationHandler); //This is the route definition
 
-function getTheLocations(req,res){
-  let city = city = req.query.city;
-  let SQL = 'INSERT INTO locations VALUES($1)';
+function locationHandler(req, res) {
+  let city= req.query.city;
+  let SQL = 'SELECT * FROM locations WHERE search_query=$1;';
   let safeValues = [city];
 
-  client.query(SQL,safeValues)
-    .then( results => {
-      if (results.rows>0){
-        res.send(results.rows);
+  return client.query(SQL, safeValues)
+    .then(results => {
+      if (results.rows.length) { //I want to check if the result is empty or not
+        res.send(results.rows[0]);
+      } else {
+        getTheLocations(city);
       }
     })
-    .catch (error => errorHandler(error));
+    .catch(error => errorHandler(error));
 }
 
 
-// function getTheLocations(city) {
+function getTheLocations(city) {
 
-//   //To get the data from the actual API I need KEY and URL
-//   let key = process.env.LOCATION_API_KEY; //I got the KEY from LocationIQ API
-//   const url = `https://eu1.locationiq.com/v1/search.php?key=${key}&q=${city}&format=json`; //when I use this url I have to follow the protocols
+  //To get the data from the actual API I need KEY and URL
+  let key = process.env.LOCATION_API_KEY; //I got the KEY from LocationIQ API
+  const url = `https://eu1.locationiq.com/v1/search.php?key=${key}&q=${city}&format=json`; //when I use this url I have to follow the protocols
 
-//   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
-//     .then(data => { //all the data that i got it will store in data
-//       // console.log('show me the data' , data);
-//       const locData = new Locations(city, data.body); //when we use the superagent will store everything inside body
-//       return locData; // will returned to the superagent
-//     });
-// }
+  return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
+    .then(data => { //all the data that i got it will store in data
+      // console.log('show me the data' , data);
+      const locData = new Locations(city, data.body);
+      let query = locData.formatted_query;
+      let lat = locData.latitude;
+      let lon = locData.longitude;
+
+      let SQL = 'INSERT INTO locations (search_query,formatted_query,latitude,longitude) VALUES ($1,$2,$3,$4);';
+      let safeValues = [city, query, lat, lon];
+       client.query(SQL, safeValues)
+        .then(results => {
+          results.rows[0];
+        });
+    });
+}
 
 
 
@@ -81,90 +92,91 @@ function Locations(city, data) {
 
 //-------------------------WEATHER----------------------------------//
 
-app.get('/weather', weatherHandler);
+// app.get('/weather', weatherHandler);
 
-function weatherHandler(req, res) {
+// function weatherHandler(req, res) {
 
-  const city = req.query.search_query;//I'm requesting the data from the URL so we get this one from the link itself
-  //like this http://localhost:3000/weather?city=amman and i have to pay attention
-  //that the protocol said to send a search-query
-  console.log('the city is ------------------->', city);
-  getTheWeather(city)
-    .then(weatherData => res.send(weatherData));
-}
+//   const city = req.query.search_query;//I'm requesting the data from the URL so we get this one from the link itself
+//   //like this http://localhost:3000/weather?city=amman and i have to pay attention
+//   //that the protocol said to send a search-query
+//   console.log('the city is ------------------->', city);
+//   getTheWeather(city)
+//     .then(weatherData => res.send(weatherData));
+// }
 
-// const allWeather = [];
+// // const allWeather = [];
 
-function getTheWeather(city) {
+// function getTheWeather(city) {
 
-  let key = process.env.WEATHER_API_KEY; //I stored my key in the variable
-  const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${key}`;
-  console.log('The url is -------------> ', url);
-  return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
-    .then(weatherData => { //all the data that i got it will store in data
-      let a = weatherData.body;
-      return a.data.map(val => {
-        // var weatherData = new Weather(val);
-        // allWeather.push(weatherData);
-        return new Weather(val);
-      });
-      // return allWeather;
+//   let key = process.env.WEATHER_API_KEY; //I stored my key in the variable
+//   const url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${key}`;
+//   console.log('The url is -------------> ', url);
+//   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
+//     .then(weatherData => { //all the data that i got it will store in data
+//       let a = weatherData.body;
+//       return a.data.map(val => {
+//         // var weatherData = new Weather(val);
+//         // allWeather.push(weatherData);
+//         return new Weather(val);
+//       });
+//       // return allWeather;
 
-    });
+//     });
 
-}
-function Weather(data) {
-  this.forecast = data.weather.description;
-  this.time = data.valid_date;
-}
+// }
+// function Weather(data) {
+//   this.forecast = data.weather.description;
+//   this.time = data.valid_date;
+// }
+
 //----------------------------------TRAIL------------------------------------------//
 
-//set trails route
-app.get('/trails', trailsHandler);
+// //set trails route
+// app.get('/trails', trailsHandler);
 
-function trailsHandler(req, res) {
-  //I'm requesting the data from the URL s
-  const lat = req.query.lat;
-  const lon = req.query.lon;
-  console.log('the lat is ------------------->', lat);
-  getTheTrails(lat, lon)
-    .then(trailsData => res.send(trailsData));
-}
+// function trailsHandler(req, res) {
+//   //I'm requesting the data from the URL s
+//   const lat = req.query.lat;
+//   const lon = req.query.lon;
+//   console.log('the lat is ------------------->', lat);
+//   getTheTrails(lat, lon)
+//     .then(trailsData => res.send(trailsData));
+// }
 
-const allTrails = [];
+// const allTrails = [];
 
-function getTheTrails(lat, lon) {
+// function getTheTrails(lat, lon) {
 
-  let key = process.env.TRAIL_API_KEY; //I stored my key in the variable
+//   let key = process.env.TRAIL_API_KEY; //I stored my key in the variable
 
-  const url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=10&key=${key}`;
+//   const url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=10&key=${key}`;
 
-  //console.log('The url is -------------> ',url);
+//   //console.log('The url is -------------> ',url);
 
-  return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
-    .then(trailsData => { //all the data that i got it will store in data
-      trailsData.body.trails.forEach(val => {
-        var trailsData = new Trails(val);
-        allTrails.push(trailsData);
-      });
-      return allTrails;
+//   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
+//     .then(trailsData => { //all the data that i got it will store in data
+//       trailsData.body.trails.forEach(val => {
+//         var trailsData = new Trails(val);
+//         allTrails.push(trailsData);
+//       });
+//       return allTrails;
 
-    });
+//     });
 
-}
+// }
 
-function Trails(trails) {
-  this.name = trails.name;
-  this.location = trails.location;
-  this.length = trails.length;
-  this.stars = trails.stars;
-  this.star_votes = trails.starVotes;
-  this.summary = trails.summary;
-  this.trail_url = trails.url;
-  this.conditions = trails.conditionStatus;
-  this.condition_date = new Date(trails.conditionDate).toString().slice(0, 15);
-  // this.condition_time=trails.conditionDate;
-}
+// function Trails(trails) {
+//   this.name = trails.name;
+//   this.location = trails.location;
+//   this.length = trails.length;
+//   this.stars = trails.stars;
+//   this.star_votes = trails.starVotes;
+//   this.summary = trails.summary;
+//   this.trail_url = trails.url;
+//   this.conditions = trails.conditionStatus;
+//   this.condition_date = new Date(trails.conditionDate).toString().slice(0, 15);
+//   // this.condition_time=trails.conditionDate;
+// }
 
 //---------------------------------------------------------------------------------//
 
@@ -175,7 +187,7 @@ app.use('*', (req, res) => {
 });
 
 //This function for any error
-function errorHandler(error, req, res){
+function errorHandler(error, req, res) {
   res.status(500).send('ERROR');
 
 }
