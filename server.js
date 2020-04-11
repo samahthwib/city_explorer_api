@@ -11,12 +11,11 @@ const pg = require('pg');//prepare the connection between postgres DB and the se
 
 
 const PORT = process.env.PORT || 3000;
+
+const server = express(); //initialize the express to use the functions come up with express lib
+server.use(cors());
+
 const client = new pg.Client(process.env.DATABASE_URL);//
-
-
-const app = express(); //initialize the express to use the functions come up with express lib
-app.use(cors());
-
 
 client.connect() //this is a promise fn
   .then(() => {
@@ -55,6 +54,14 @@ function locationHandler(req, res) {
     .catch(error => errorHandler(error));
 }
 
+function myLocations(req, res) {
+
+  const city = req.query.city; //I'm requesting the data from the URL so we get this one from the link itself like this http://localhost:3000/location?city=amman
+  //The superagent will return the data to the locData , if we want return data from a superagent
+  // the reciever should be a promise fn so we wrote it like this
+  getTheLocations(city)//This is a reciever
+    .then(locData => {
+      res.send(locData);//This is my response
 
 function getTheLocations(city) {
 
@@ -105,7 +112,7 @@ function weatherHandler(req, res) {
     .then(weatherData => res.send(weatherData));
 }
 
-// const allWeather = [];
+
 
 function getTheWeather(city) {
 
@@ -116,12 +123,8 @@ function getTheWeather(city) {
     .then(weatherData => { //all the data that i got it will store in data
       let a = weatherData.body;
       return a.data.map(val => {
-        // var weatherData = new Weather(val);
-        // allWeather.push(weatherData);
         return new Weather(val);
       });
-      // return allWeather;
-
     });
 
 }
@@ -135,33 +138,27 @@ function Weather(data) {
 // //set trails route
 app.get('/trails', trailsHandler);
 
+
 function trailsHandler(req, res) {
   //I'm requesting the data from the URL s
-  const lat = req.query.lat;
-  const lon = req.query.lon;
-  console.log('the lat is ------------------->', lat);
+  const lat = req.query.latitude;
+  const lon = req.query.longitude;
   getTheTrails(lat, lon)
     .then(trailsData => res.send(trailsData));
 }
-
-const allTrails = [];
 
 function getTheTrails(lat, lon) {
 
   let key = process.env.TRAIL_API_KEY; //I stored my key in the variable
 
   const url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=10&key=${key}`;
-
-  //console.log('The url is -------------> ',url);
-
   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
     .then(trailsData => { //all the data that i got it will store in data
-      trailsData.body.trails.forEach(val => {
-        var trailsData = new Trails(val);
-        allTrails.push(trailsData);
-      });
-      return allTrails;
 
+     let a=trailsData.body;
+      return a.trails.map(val => {
+      return new Trails(val);
+      });
     });
 
 }
@@ -176,7 +173,8 @@ function Trails(trails) {
   this.trail_url = trails.url;
   this.conditions = trails.conditionStatus;
   this.condition_date = new Date(trails.conditionDate).toString().slice(0, 15);
-  // this.condition_time=trails.conditionDate;
+  this.condition_time = trails.conditionDate.split(" ")[1];
+
 }
 
 //---------------------------------------------------------------------------------//
@@ -263,12 +261,14 @@ function Restaurant (data) {
 //http://localhost:3000/anything
 
 app.use('*', (req, res) => {
+
   res.status(404).send('Not Found');
 });
 
 //This function for any error
+
 function errorHandler(error, req, res) {
-  res.status(500).send('ERROR');
+res.status(500).send('ERROR');
 
 }
 
