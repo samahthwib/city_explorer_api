@@ -83,7 +83,7 @@ function weatherHandler(req, res) {
     .then(weatherData => res.send(weatherData));
 }
 
-// const allWeather = [];
+
 
 function getTheWeather(city) {
 
@@ -94,14 +94,8 @@ function getTheWeather(city) {
     .then(weatherData => { //all the data that i got it will store in data
       let a = weatherData.body;
       return a.data.map(val => {
-
-        // weatherData.body.data.forEach(val=>{
-        // var weatherData = new Weather(val);
-        // allWeather.push(weatherData);
         return new Weather(val);
       });
-      // return allWeather;
-
     });
 
 }
@@ -109,38 +103,31 @@ function Weather(data) {
   this.forecast = data.weather.description;
   this.time = data.valid_date;
 }
-//----------------------------------TRAIL------------------------------------------//
+// //----------------------------------TRAIL------------------------------------------//
 
 //set trails route
 server.get('/trails', trailsHandler);
 
+
 function trailsHandler(req, res) {
   //I'm requesting the data from the URL s
-  const lat = req.query.lat;
-  const lon = req.query.lon;
-  console.log('the lat is ------------------->', lat);
+  const lat = req.query.latitude;
+  const lon = req.query.longitude;
   getTheTrails(lat, lon)
     .then(trailsData => res.send(trailsData));
 }
-
-const allTrails = [];
 
 function getTheTrails(lat, lon) {
 
   let key = process.env.TRAIL_API_KEY; //I stored my key in the variable
 
   const url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=10&key=${key}`;
-
-  //console.log('The url is -------------> ',url);
-
   return superagent.get(url) //superagent it's a library, we call it promise fn  and here it will go to the url and return all the data
     .then(trailsData => { //all the data that i got it will store in data
-      trailsData.body.trails.forEach(val => {
-        var trailsData = new Trails(val);
-        allTrails.push(trailsData);
+     let a=trailsData.body;
+      return a.trails.map(val => {
+      return new Trails(val);
       });
-      return allTrails;
-
     });
 
 }
@@ -155,7 +142,7 @@ function Trails(trails) {
   this.trail_url = trails.url;
   this.conditions = trails.conditionStatus;
   this.condition_date = new Date(trails.conditionDate).toString().slice(0, 15);
-  // this.condition_time=trails.conditionDate;
+  this.condition_time = trails.conditionDate.split(" ")[1];
 }
 
 //---------------------------------------------------------------------------------//
